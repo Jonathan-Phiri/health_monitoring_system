@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Monitor</title>
+</head>
+<body>
+    <h1>Temperature Monitor</h1>
+    <div>
+        Temperature: <span id="temperature">--</span> °C
+    </div>
+
+    <!-- JavaScript for AJAX polling -->
+    <script>
+        function fetchTemperature() {
+            fetch('/api/latest-temperature/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('temperature').innerText = data.temperature + ' °C';
+            });
+        }
+
+        // Fetch temperature every 2 seconds
+        setInterval(fetchTemperature, 2000);
+    </script>
+</body>
+</html>
