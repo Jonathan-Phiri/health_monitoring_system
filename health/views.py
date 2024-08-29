@@ -4,6 +4,7 @@ from .models import Temperature
 from .serializer import TemperatureSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 
 class MonitorDetailView(generics.RetrieveAPIView):
     queryset = Temperature.objects.all()
@@ -22,9 +23,11 @@ class MonitorCreateAPIView(generics.CreateAPIView):
 
 class LatestTemperatureAPIView(APIView):
     def get(self, request):
-        # Retrieve the latest temperature based on the timestamp field
-        latest_temperature = Temperature.objects.latest('timestamp')
-        return Response({"temperature": latest_temperature.data})
+        try:
+            latest_temperature = Temperature.objects.latest('timestamp')
+            return Response({"temperature": latest_temperature.data})
+        except Temperature.DoesNotExist:
+            return Response({"error": "No temperature data available."}, status=status.HTTP_404_NOT_FOUND)
     
 def monitor(request):
     return render(request, 'monitor.html')
