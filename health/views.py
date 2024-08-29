@@ -22,7 +22,8 @@ class MonitorCreateAPIView(generics.CreateAPIView):
 
 class LatestTemperatureAPIView(APIView):
     def get(self, request):
-        latest_temperature = Temperature.objects.latest('id')
+        # Retrieve the latest temperature based on the timestamp field
+        latest_temperature = Temperature.objects.latest('timestamp')
         return Response({"temperature": latest_temperature.data})
     
 def monitor(request):
