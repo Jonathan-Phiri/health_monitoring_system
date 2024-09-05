@@ -1,7 +1,9 @@
 from django.db import models
 
-# Create your models here.
 class Temperature(models.Model):
     data = models.CharField(max_length=20)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)  # Automatically adds the current time
 
+class HeartRate(models.Model):
+    data = models.CharField(max_length=20)
+    timestamp = models.DateTimeField(auto_now_add=True)

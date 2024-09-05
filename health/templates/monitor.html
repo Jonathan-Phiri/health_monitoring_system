@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temperature Monitor</title>
+    <title>Health Monitor</title>
     <style>
         /* Apply a dark gradient background to the entire page */
         body {
@@ -13,11 +14,10 @@
             background: linear-gradient(135deg, #2c3e50, #4ca1af);
             color: #fff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             text-align: center;
-            flex-direction: column; /* Stack elements vertically */
         }
 
         /* Style the main heading */
@@ -26,42 +26,153 @@
             margin-bottom: 20px;
         }
 
-        /* Style the temperature display area */
-        div {
+        /* Style the data display areas */
+        .data-container {
             font-size: 1.5em;
             padding: 20px;
             border-radius: 10px;
             background-color: rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            width: fit-content;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 50%;
+            max-width: 300px;
+            margin-top: 75px;
         }
 
         /* Style the temperature value */
-        #temperature {
+        #temperature,
+        #heartrate {
             font-weight: bold;
             font-size: 2em;
             color: darkgreen;
+            margin-left: 10px;
+        }
+
+        /* Style the icons */
+        .icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* Style the navigation bar */
+        .navbar {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(5, 5, 5, 0.3);
+            display: flex;
+            justify-content: flex-start;
+            padding: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Style the nav links */
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 0 10px;
+            font-size: 1em;
+        }
+
+        .navbar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .data-container {
+                flex-direction: column;
+            }
+
+            .icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 10px;
+            }
+
+            #temperature,
+            #heartrate {
+                font-size: 1.75em;
+            }
+
+            .navbar a {
+                font-size: 0.875em;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.75em;
+            }
+
+            .icon {
+                width: 30px;
+                height: 30px;
+            }
+
+            #temperature,
+            #heartrate {
+                font-size: 1.5em;
+            }
+
+            .navbar a {
+                font-size: 0.75em;
+                padding: 5px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <h1>Temperature Monitor</h1>
-    <div>
-        Temperature: <span id="temperature">--</span> 
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="/monitor/"><i class="fi fi-sr-home"></i>Home Page</a>
+        <a href="/history/">History</a>
+    </div>
+
+    <!-- Temperature Display Area -->
+    <div class="data-container">
+        <img src="img/thermometer.png" class="icon">
+        Temperature: <span id="temperature">--</span> °C
+    </div>
+
+    <!-- Heart Rate Display Area -->
+    <div class="data-container">
+        <img src="img/heartbeat.png" class="icon">
+        Heart Rate: <span id="heartrate">--</span> bpm
     </div>
 
     <!-- JavaScript for AJAX polling -->
     <script>
         function fetchTemperature() {
             fetch('/api/latest-temperature/')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('temperature').innerText = data.temperature + ' °C';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('temperature').innerText = data.temperature + ' °C';
+                });
         }
 
-        // Fetch temperature every 2 seconds
+        function fetchHeartRate() {
+            fetch('/api/latest-heartrate/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('heartrate').innerText = data.heartrate + ' bpm';
+                });
+        }
+
+        // Fetch temperature and heart rate every 2 seconds
         setInterval(fetchTemperature, 2000);
+        setInterval(fetchHeartRate, 2000);
     </script>
 </body>
+
 </html>
