@@ -86,26 +86,24 @@
 <body>
     <!-- Navigation Bar -->
     <div class="navbar">
-        <a href="/monitor/">Home Page</a>
-        <a href="/history/">History</a>
+        <a href="{% url 'monitor' %}">Home Page</a>
+        <a href="{% url 'temperature_history' %}">History</a>
     </div>
 
-    <h1>Temperature and Heart Rate History</h1>
+    <h1>Temperature History</h1>
 
     <table>
         <thead>
             <tr>
                 <th>Timestamp</th>
                 <th>Temperature (°C)</th>
-                <th>Heart Rate (bpm)</th>
             </tr>
         </thead>
         <tbody>
-            {% for temp, heart in zip(temperature_data, heartrate_data) %}
+            {% for temp in temperature_data %}
             <tr>
                 <td>{{ temp.timestamp }}</td>
                 <td>{{ temp.data }}</td>
-                <td>{{ heart.data }}</td>
             </tr>
             {% endfor %}
         </tbody>

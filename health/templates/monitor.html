@@ -135,14 +135,14 @@
 <body>
     <!-- Navigation Bar -->
     <div class="navbar">
-        <a href="/monitor/"><i class="fi fi-sr-home"></i>Home Page</a>
-        <a href="/history/">History</a>
+        <a href="{% url 'monitor' %}"><i class="fi fi-sr-home"></i>Home Page</a>
+        <a href="{% url 'temperature_history' %}">History</a>
     </div>
 
     <!-- Temperature Display Area -->
     <div class="data-container">
         <img src="img/thermometer.png" class="icon">
-        Temperature: <span id="temperature">--</span> °C
+        Temperature: <span id="temperature">--</span>
     </div>
 
     <!-- Heart Rate Display Area -->
