@@ -35,6 +35,6 @@ def monitor(request):
 
 def temperature_history(request):
     temperature_data = Temperature.objects.all().order_by('-timestamp')  # Fetch all temperature data, ordered by timestamp
-    return render(request, 'temperature_history.html', {'temperature_data': temperature_data})
+    return render(request, 'history.html', {'temperature_data': temperature_data})
 
 
