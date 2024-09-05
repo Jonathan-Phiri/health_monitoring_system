@@ -161,17 +161,8 @@
                 });
         }
 
-        function fetchHeartRate() {
-            fetch('/api/latest-heartrate/')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('heartrate').innerText = data.heartrate + ' bpm';
-                });
-        }
-
         // Fetch temperature and heart rate every 2 seconds
         setInterval(fetchTemperature, 2000);
-        setInterval(fetchHeartRate, 2000);
     </script>
 </body>
 
