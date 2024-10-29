@@ -114,6 +114,12 @@
             color: var(--primary-color);
         }
 
+        .timestamp {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
@@ -152,7 +158,7 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="{% url 'monitor' %}">Home</a>
-            <a href="{% url 'temperature_history' %}">History</a>
+            <a href="{% url 'vitals_history' %}">History</a>
         </div>
     </nav>
 
@@ -165,6 +171,7 @@
                 </svg>
                 <span class="data-label">Temperature</span>
                 <span id="temperature" class="data-value">--</span>
+                <span id="temperature-timestamp" class="timestamp"></span>
             </div>
             <div class="data-card">
                 <svg class="icon" viewBox="0 0 24 24">
@@ -172,36 +179,79 @@
                 </svg>
                 <span class="data-label">Heart Rate</span>
                 <span id="heartrate" class="data-value">-- <small>bpm</small></span>
+                <span id="heartrate-timestamp" class="timestamp"></span>
             </div>
         </div>
     </main>
 
     <script>
-        function fetchTemperature() {
-            fetch('/api/latest-temperature/')
-                .then(response => response.json())
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString();
+        }
+
+        // Update display with new data
+        function updateDisplay(data) {
+            if (data.temperature) {
+                document.getElementById('temperature').innerText = `${data.temperature.value.toFixed(1)} °C`;
+                document.getElementById('temperature-timestamp').innerText = 
+                    `Last updated: ${formatTimestamp(data.temperature.timestamp)}`;
+            }
+            
+            if (data.heart_rate) {
+                document.getElementById('heartrate').innerHTML = 
+                    `${data.heart_rate.value.toFixed(0)} <small>bpm</small>`;
+                document.getElementById('heartrate-timestamp').innerText = 
+                    `Last updated: ${formatTimestamp(data.heart_rate.timestamp)}`;
+            }
+        }
+
+        // Fetch latest data from combined endpoint
+        function fetchLatestData() {
+            fetch('/api/vitals/latest/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    document.getElementById('temperature').innerText = `${data.temperature} °C`;
+                    updateDisplay(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
                 });
         }
 
-        function fetchHeartRate() {
-            fetch('/api/latest-heartrate/')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('heartrate').innerHTML = `${data.heartrate} <small>bpm</small>`;
-                });
+        // Initialize polling
+        let pollInterval;
+
+        function startPolling() {
+            // Initial fetch
+            fetchLatestData();
+            
+            // Set up regular polling
+            pollInterval = setInterval(fetchLatestData, 2000);
         }
 
-        // Fetch temperature and heart rate every 2 seconds
-        setInterval(() => {
-            fetchTemperature();
-            fetchHeartRate();
-        }, 2000);
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+            }
+        }
 
-        // Initial fetch
-        fetchTemperature();
-        fetchHeartRate();
+        // Handle visibility change to conserve resources
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopPolling();
+            } else {
+                startPolling();
+            }
+        });
+
+        // Start polling when page loads
+        startPolling();
     </script>
 </body>
 </html>
