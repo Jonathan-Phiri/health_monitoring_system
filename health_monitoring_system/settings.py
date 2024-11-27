@@ -125,12 +125,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'your-smtp-server.com'
+EMAIL_HOST = 'smtp.gmal.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@example.com'
-EMAIL_HOST_PASSWORD = 'your-email-password'
-DEFAULT_FROM_EMAIL = 'your-email@example.com'
+EMAIL_HOST_USER = 'jonathanjaypumba@gmail.com'
+EMAIL_HOST_PASSWORD = '10162614'
+DEFAULT_FROM_EMAIL = 'jonathanjaypumba@gmail.com'
 
 
 VITAL_SIGNS_SETTINGS = {
