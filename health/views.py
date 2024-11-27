@@ -6,6 +6,7 @@ from rest_framework import status
 from datetime import datetime
 from .models import Temperature, HeartRate
 from .serializer import TemperatureSerializer, HeartRateSerializer
+from .utils import VitalsMonitor
 
 # Temperature Views
 class MonitorDetailView(generics.RetrieveAPIView):
@@ -100,27 +101,68 @@ def vitals_history(request):
 
 # Combined Create View for ESP32 Data
 class VitalsCreateAPIView(APIView):
+    """Combined endpoint for creating temperature and heart rate records with alerts."""
+    
+    @transaction.atomic
     def post(self, request):
         try:
             data = request.data
+            response_data = {"created": [], "alerts": []}
+            monitor = VitalsMonitor()
             
-            # Create temperature record if temperature data is present
+            # Handle temperature
             if 'temperature' in data:
-                temp_serializer = TemperatureSerializer(data={'data': data['temperature']})
+                temp_value = float(data['temperature'])
+                temp_serializer = TemperatureSerializer(data={'data': temp_value})
+                
                 if temp_serializer.is_valid():
                     temp_serializer.save()
+                    response_data["created"].append("temperature")
+                    
+                    # Check temperature thresholds
+                    is_alert, message = monitor.check_thresholds('TEMPERATURE', temp_value)
+                    if is_alert and monitor.send_alert(message, 'TEMPERATURE', temp_value):
+                        response_data["alerts"].append({
+                            "type": "temperature",
+                            "message": message
+                        })
+                else:
+                    raise ValidationError(f"Temperature validation failed: {temp_serializer.errors}")
             
-            # Create heart rate record if heart rate data is present
+            # Handle heart rate
             if 'heart_rate' in data:
-                hr_serializer = HeartRateSerializer(data={'data': data['heart_rate']})
+                hr_value = float(data['heart_rate'])
+                hr_serializer = HeartRateSerializer(data={'data': hr_value})
+                
                 if hr_serializer.is_valid():
                     hr_serializer.save()
+                    response_data["created"].append("heart_rate")
+                    
+                    # Check heart rate thresholds
+                    is_alert, message = monitor.check_thresholds('HEART_RATE', hr_value)
+                    if is_alert and monitor.send_alert(message, 'HEART_RATE', hr_value):
+                        response_data["alerts"].append({
+                            "type": "heart_rate",
+                            "message": message
+                        })
+                else:
+                    raise ValidationError(f"Heart rate validation failed: {hr_serializer.errors}")
+            
+            if not response_data["created"]:
+                return Response({
+                    "error": "No valid vital signs data provided."
+                }, status=status.HTTP_400_BAD_REQUEST)
             
             return Response({
-                "message": "Vitals data recorded successfully"
+                "message": "Vitals data recorded successfully",
+                "details": response_data
             }, status=status.HTTP_201_CREATED)
             
-        except Exception as e:
+        except ValidationError as e:
             return Response({
                 "error": str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                "error": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

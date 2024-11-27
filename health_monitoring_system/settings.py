@@ -123,3 +123,28 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'your-smtp-server.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@example.com'
+EMAIL_HOST_PASSWORD = 'your-email-password'
+DEFAULT_FROM_EMAIL = 'your-email@example.com'
+
+
+VITAL_SIGNS_SETTINGS = {
+    'TEMPERATURE': {
+        'MIN_THRESHOLD': 35.0,  # °C
+        'MAX_THRESHOLD': 38.0,  # °C
+    },
+    'HEART_RATE': {
+        'MIN_THRESHOLD': 60,    # BPM
+        'MAX_THRESHOLD': 100,   # BPM
+    }
+}
+
+EMAIL_ALERT_SETTINGS = {
+    'ALERT_EMAILS': ['jonathanjaypumba@gmail.com'],  # List of email recipients
+    'ALERT_COOLDOWN': 300,  # Seconds between alerts for the same condition (5 minutes)
+}
