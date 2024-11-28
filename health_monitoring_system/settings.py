@@ -129,7 +129,7 @@ EMAIL_HOST = 'smtp.gmal.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'jonathanjaypumba@gmail.com'
-EMAIL_HOST_PASSWORD = '10162614'
+EMAIL_HOST_PASSWORD = 'cmfi szaa davf ysrh'
 DEFAULT_FROM_EMAIL = 'jonathanjaypumba@gmail.com'
 
 

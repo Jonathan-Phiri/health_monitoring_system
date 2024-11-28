@@ -7,6 +7,7 @@ from datetime import datetime
 from .models import Temperature, HeartRate
 from .serializer import TemperatureSerializer, HeartRateSerializer
 from .utils import VitalsMonitor
+from django.db import transaction
 
 # Temperature Views
 class MonitorDetailView(generics.RetrieveAPIView):
